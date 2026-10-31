@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cap Rate or Cap?</title>
+<meta name="description" content="An industrial cap rate guessing game by @StructuralVac">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Cap Rate or Cap?">
+<meta property="og:description" content="An industrial cap rate guessing game by @StructuralVac">
+<meta property="og:image" content="https://hunaindada.github.io/cap-rate-or-cap/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Cap Rate or Cap?">
+<meta name="twitter:description" content="An industrial cap rate guessing game by @StructuralVac">
+<meta name="twitter:image" content="https://hunaindada.github.io/cap-rate-or-cap/og.png">
+<meta name="theme-color" content="#0b1117">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230b1117'/%3E%3Ctext x='32' y='44' font-family='monospace' font-size='34' font-weight='700' text-anchor='middle' fill='%235ab0ff'%3E%25%3C/text%3E%3C/svg%3E">
+<style>
+:root{--bg:#0b1117;--grid:rgba(110,160,210,.08);--card:#111a24;--sub:#0e161f;--border:#22303f;--strong:#3a4c60;--text:#e6edf3;--text2:#9fb0c0;--text3:#6f8193;--accent:#5ab0ff;--ok:#3fd18b;--warn:#f2c14e;--bad:#ff6b6b;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;--sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:var(--sans);-webkit-text-size-adjust:100%}
+body{min-height:100vh;background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:24px 24px;padding:16px 12px calc(40px + env(safe-area-inset-bottom))}
+.col{max-width:560px;width:100%;margin:0 auto}
+.hdr{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:8px;margin-bottom:14px}
+.title{font-size:clamp(26px,8vw,36px);font-weight:800;letter-spacing:-.02em;line-height:1.05}
+.tag{font-size:13px;color:var(--text2);margin-top:4px}
+.hud{font-family:var(--mono);font-size:13px;color:var(--text2);display:flex;flex-wrap:wrap;gap:4px 12px}
+.hud:empty{display:none}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;width:100%}
+.card+.card{margin-top:12px}
+.label{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--text3)}
+.big{font-family:var(--mono);font-weight:700;font-size:clamp(44px,15vw,76px);line-height:1;letter-spacing:-.03em}
+.row{display:flex;flex-wrap:wrap;gap:10px}
+.btn{appearance:none;-webkit-appearance:none;border:1px solid var(--strong);background:transparent;color:var(--text);border-radius:12px;padding:14px 18px;font-size:16px;font-weight:600;font-family:var(--sans);cursor:pointer;min-height:48px;flex:1 1 140px;touch-action:manipulation}
+.btn.primary{border:none;background:var(--text);color:var(--bg)}
+.btn.peek{border:1px dashed var(--accent)}
+.btn:active{transform:scale(.98)}
+.nud{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.nud button{appearance:none;-webkit-appearance:none;border:1px solid var(--border);background:var(--sub);color:var(--text);border-radius:10px;padding:10px 0;font-size:15px;font-family:var(--mono);cursor:pointer;flex:1 1 56px;min-height:44px;touch-action:manipulation}
+input[type=range]{width:100%;height:36px;margin:10px 0 0;accent-color:var(--accent);cursor:pointer;touch-action:pan-y}
+.specs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 14px;margin-top:10px}
+.spec{border-top:1px solid rgba(255,255,255,.06);padding-top:8px;min-width:0}
+.spec .v{font-family:var(--mono);font-size:15px;margin-top:2px;overflow-wrap:anywhere}
+.mkt{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px;align-items:baseline}
+.mkt .n{font-size:22px;font-weight:700}
+.prod{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:6px}
+.badge{font-family:var(--mono);font-weight:800;font-size:12px;letter-spacing:.1em;border:1.5px solid var(--accent);border-radius:6px;padding:2px 7px}
+.prod .p{font-size:15px;font-weight:600;color:var(--text2);min-width:0;overflow-wrap:anywhere}
+.note{margin-top:12px;font-size:13.5px;color:var(--text2);font-style:italic;line-height:1.45}
+.pips{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px}
+.pip{flex:1 1 24px;height:6px;border-radius:3px;background:var(--border)}
+.lr{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px}
+.lr>span:first-child{min-width:0;overflow-wrap:anywhere}
+.brk{margin-top:12px;border-top:1px solid rgba(255,255,255,.06);padding-top:8px;font-family:var(--mono);font-size:12.5px;color:var(--text2);line-height:1.6}
+.brk .tot{color:var(--text);font-weight:700;border-top:1px solid rgba(255,255,255,.08);margin-top:4px;padding-top:4px}
+.small{font-size:11px;color:var(--text3)}
+.meter{position:relative;height:28px;margin:6px 4px 2px}
+.meter div{position:absolute}
+.stamp{font-family:var(--mono);font-weight:800;font-size:13px;letter-spacing:.12em;border:2px solid;border-radius:6px;padding:4px 8px}
+.quip{font-size:17px;font-weight:600;flex:1 1 180px;line-height:1.35}
+.share{margin-top:14px;padding:12px;border-radius:10px;background:var(--sub);border:1px dashed var(--strong);font-size:14.5px;line-height:1.45;-webkit-user-select:all;user-select:all;overflow-wrap:anywhere}
+.model{margin-top:12px;font-family:var(--mono);font-size:12.5px;color:var(--text2);line-height:1.6}
+.model>div{overflow-wrap:anywhere}
+.src{margin-top:14px;background:var(--sub)}
+.src a{color:var(--accent);font-size:13px;line-height:1.5;overflow-wrap:anywhere}
+.src .it{padding:3px 0}
+.disc{font-size:12px;color:var(--text3);margin-top:18px;line-height:1.5;text-align:center}
+.recap{margin-top:14px;font-family:var(--mono);font-size:13px;line-height:1.7}
+.recap .lr{border-top:1px solid rgba(255,255,255,.06);padding:4px 0}
+@keyframes pop{0%{transform:scale(.5);opacity:0}60%{transform:scale(1.12);opacity:1}100%{transform:scale(1);opacity:1}}
+@keyframes fin{0%{transform:translateY(8px);opacity:0}100%{transform:none;opacity:1}}
+@keyframes stamp{0%{transform:rotate(-8deg) scale(2.2);opacity:0}70%{transform:rotate(-8deg) scale(.95);opacity:1}100%{transform:rotate(-8deg) scale(1);opacity:1}}
+.a-pop{animation:pop .45s ease-out both}.a-in{animation:fin .35s ease-out both}.a-stamp{animation:stamp .4s ease-out both}
+@media (prefers-reduced-motion:reduce){.a-pop,.a-in,.a-stamp{animation:none}}
+</style>
+</head>
+<body>
+<div class="col">
+  <div class="hdr">
+    <div style="min-width:0">
+      <h1 class="title" style="margin:0">Cap Rate or Cap?</h1>
+      <div class="tag">An industrial cap rate guessing game by @StructuralVac</div>
+    </div>
+    <div class="hud" id="hud"></div>
+  </div>
+  <main id="app"></main>
+  <div id="sources"></div>
+  <div class="disc">Fictional deals. Cap rates come from a simple model calibrated to published survey ranges (shown on every reveal). Not real comps, not advice.</div>
+</div>
+<script>
+(function(){
+"use strict";
+var ROUNDS=8,MIN=400,MAX=900,LO=475,HI=850,POST_HIKE=15,CLASS_B=70,CLASS_C=210;
+function mkt(name,tier,nm,cbLo,cbHi){var mid=(cbLo+cbHi)/2;var base=Math.round(nm===null?mid:(nm+mid)/2);var cb="CBRE "+(cbLo/100).toFixed(2)+" to "+(cbHi/100).toFixed(2);var src=nm===null?cb+" midpoint":"avg of NM "+(nm/100).toFixed(2)+" and "+cb+" mid";return{name:name,tier:tier,nm:nm,cbLo:cbLo,cbHi:cbHi,base:base,src:src};}
+var MARKETS=[mkt("Inland Empire","Tier 1 coastal",null,500,575),mkt("Lehigh Valley","Tier 1 Northeast",550,500,550),mkt("DFW","Tier 1 Sunbelt",575,500,550),mkt("Savannah","Port market",null,525,575),mkt("Phoenix","Sunbelt growth",550,525,575),mkt("Houston","Gulf big box",525,525,575),mkt("Chicago","Midwest hub",550,500,575),mkt("Reno","Tahoe-Reno West",500,550,600),mkt("Columbus","Midwest big box",600,550,600)];
+var CREDITS=[{name:"Vacant spec",v:0},{name:"Local private tenant",v:15},{name:"Regional HVAC distributor",v:10},{name:"National credit, unrated",v:0},{name:"Investment grade 3PL",v:-10},{name:"Investment grade retailer",v:-15}];
+var MTMS=[{name:"Below market (upside)",short:"below-mkt rents"},{name:"At market",short:"at-mkt rents"},{name:"Above market (rollover risk)",short:"above-mkt rents"}];
+var LEASE=[[-15,10,25],[-5,0,15],[5,-15,20]];
+var PRODUCTS=[
+{name:"Bulk distribution",sfLo:400000,sfHi:1200000,yLo:1995,small:false,adj:0,ga:false,clears:function(y){return y>=2020?[36,40]:y>=2005?[32]:[28,30,32];}},
+{name:"Mid-bay / light industrial",sfLo:100000,sfHi:350000,yLo:1984,small:false,adj:0,ga:false,clears:function(y){return y>=2015?[28,32]:y>=2000?[24,28]:[20,22,24];}},
+{name:"Shallow-bay / small-bay (multi-tenant)",sfLo:25000,sfHi:100000,yLo:1984,small:true,adj:0,ga:false,clears:function(y){return y>=2015?[24,28]:y>=2000?[20,24]:[18,20,22];}},
+{name:"Flex / R&D",sfLo:30000,sfHi:120000,yLo:1984,small:true,adj:25,ga:true,clears:function(y){return y>=2015?[20,24]:[16,18,20];}},
+{name:"Cold storage",sfLo:100000,sfHi:400000,yLo:2000,small:false,adj:40,ga:true,clears:function(y){return y>=2020?[36,40]:[28,32];}},
+{name:"Manufacturing",sfLo:150000,sfHi:600000,yLo:1984,small:false,adj:50,ga:true,clears:function(y){return y>=2015?[28,32]:[24,28];}},
+{name:"Infill last-mile",sfLo:30000,sfHi:150000,yLo:1984,small:true,adj:-15,ga:true,clears:function(y){return y>=2015?[28,32]:y>=2000?[24,28]:[20,22,24];}}];
+function classOf(p,year,clear){var flex=p.name==="Flex / R&D";var aMin=flex?20:p.small?24:p.name==="Mid-bay / light industrial"?28:32;var cMin=flex?18:p.small?20:24;if(year>=2012&&clear>=aMin)return"A";if(year<1995||clear<cMin)return"C";return"B";}
+var NOTES=["Broker note: 'Generational opportunity.' Every deal is.","Broker note: 'Priced to move.' It has not moved.","Broker note: 'Below replacement cost.' So is my truck.","Broker note: 'Tenant loves the site.' Tenant did not say that.","Broker note: 'Heavy power.' Unverified.","Broker note: 'Infill, irreplaceable.' 40 minutes from infill.","Broker note: 'Strong rollover story.' Translation: rollover.","Broker note: 'Call for pricing.' Lol.","Broker note: 'Multiple offers expected.' Sure.","Broker note: 'Covered land play.' Roof is 22 years old.","Broker note: 'TI is minimal.' Define minimal.","Broker note: 'Seller is motivated.' Seller is a fund in year 9."];
+var SOURCES=[
+{name:"Newmark V&A Market Survey, 2026 Mid-Year (NM)",href:"https://eussa01corpweb.blob.core.windows.net/nmrkweb/uploads/documents/2026-Newmark_VA_Mid-Year-Update_Market-Survey.pdf"},
+{name:"CBRE U.S. Cap Rate Survey, H2 2025",href:"https://mediaassets.cbre.com/-/media/project/cbre/shared-site/teams/united-states/ft-lauderdale/calum-weaver/cbre-us-cap-rate-survey-h2-2025.pdf?rev=f2afe58a48bc429d9dbbf098d8cad889"},
+{name:"Cushman & Wakefield, Fall/Winter 2026 Industrial Investor Outlook",href:"https://content.cushmanwakefield.com/api/public/content/73b39b55b5524e9b838aeb1354615572?v=8b4122f0"},
+{name:"Cushman & Wakefield, Spring 2026 Industrial Investor Outlook",href:"https://content.cushmanwakefield.com/api/public/content/27c23667512a4399b999831e614b4831"},
+{name:"Marcus & Millichap, Industrial research brief, May 2026",href:"https://www.marcusmillichap.com/research/research-brief/2026/05/research-brief-industrial-outlook"}];
+
+function rng(seed){var a=seed|0;return function(){a=(a+0x6d2b79f5)|0;var t=Math.imul(a^(a>>>15),1|a);t=(t+Math.imul(t^(t>>>7),61|t))^t;return((t^(t>>>14))>>>0)/4294967296;};}
+function pick(r,arr){return arr[Math.floor(r()*arr.length)];}
+function pct(b){return(b/100).toFixed(2)+"%";}
+function sgn(v){return(v>0?"+":v<0?"-":"")+Math.abs(v)+" bps";}
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
+
+function makeDeals(seed){
+  var r=rng(seed);var markets=MARKETS.slice();
+  for(var i=markets.length-1;i>0;i--){var j=Math.floor(r()*(i+1));var tmp=markets[i];markets[i]=markets[j];markets[j]=tmp;}
+  var notes=NOTES.slice().sort(function(){return r()-0.5;});
+  var deals=[];
+  for(i=0;i<ROUNDS;i++){
+    var m=markets[i];var p=pick(r,PRODUCTS);
+    var year=2025-Math.floor(Math.pow(r(),1.4)*(2026-p.yLo));
+    var clear=pick(r,p.clears(year));var cls=classOf(p,year,clear);
+    var sf=Math.round((p.sfLo+r()*(p.sfHi-p.sfLo))/5000)*5000;
+    var clsAdj=cls==="A"?0:cls==="B"?CLASS_B:CLASS_C;
+    var cr=pick(r,CREDITS);var vacant=cr.name==="Vacant spec";
+    var walt=vacant?0:Math.round((0.6+r()*11.5)*10)/10;
+    var mi=Math.floor(r()*3);var mt=MTMS[mi];
+    var sizeAdj=sf>=750000?-10:sf>=250000?0:sf>=100000?10:sf>=50000?20:30;
+    var wb=walt<4?0:walt<8?1:2;var leaseAdj=vacant?30:LEASE[wb][mi];
+    var noise=Math.round((r()*30-15)/5)*5;
+    var adjs=[
+      {label:"Post-hike (C&W Fall/Winter 2026)",v:POST_HIKE},
+      {label:"Class "+cls+" ("+clear+"' clear, built "+year+")",v:clsAdj},
+      {label:"Product: "+p.name+(p.ga?"*":""),v:p.adj},
+      {label:"Size "+Math.round(sf/1000)+"k SF*",v:sizeAdj},
+      {label:vacant?"Vacant, lease-up risk*":walt.toFixed(1)+" yr WALT, "+mt.short+"*",v:leaseAdj},
+      {label:vacant?"Credit n/a (vacant)*":cr.name+"*",v:cr.v},
+      {label:"Noise (deal vibes)",v:noise}];
+    var raw=m.base+adjs.reduce(function(s,a){return s+a.v;},0);
+    var ans=Math.min(HI,Math.max(LO,Math.round(raw/5)*5));
+    if(ans!==raw)adjs.push({label:ans===LO?"Floor at 4.75%":ans===HI?"Cap at 8.50%":"Rounded to 5 bps",v:ans-raw});
+    deals.push({market:m.name,tier:m.tier,sf:sf,clear:clear,product:p.name,cls:cls,year:year,walt:walt,credit:cr.name,mtm:vacant?"n/a, nobody home":mt.name,note:notes[i%notes.length],base:m.base,src:m.src,adjs:adjs,answer:ans});
+  }
+  return deals;
+}
+function quipFor(off,dir,answer,r){
+  var om=pct(Math.max(MIN,answer-75)).replace("%","");var pool;
+  if(off===0)pool=["Exact. Pin drop. Lfg!","Zero bps. Are you the seller? IYKYK."];
+  else if(off<=10)pool=["Inside a rounding error. Lfg!","That's a handshake deal. Had been a while!","Tight. Somebody actually reads rent rolls."];
+  else if(off<=25)pool=["Close enough to make best and final.","Inside the bid-ask. Respect.","The 10-year moved more than that this morning."];
+  else if(off<=50)pool=dir<0?["A little rich. IC will have questions.","Bid-ask spread energy. Seller loved you."]:["Bid-ask spread energy. Seller wanted tighter.","Lowballed it. Classic LOI."];
+  else if(off<=100)pool=dir<0?["Broker OM said "+om+". Lol. You believed it.","That's a retrade waiting to happen."]:["That's a retrade. Lol.","UST moved while you were underwriting. Sure."];
+  else pool=dir<0?["Paying 2021 money for a 2026 deal. Bold.","You underwrote 5% rent growth forever. IYKYK."]:["That's not a cap rate, that's a TI request.","Lowball LOI. Seller stopped returning calls."];
+  return pool[Math.floor(r()*pool.length)];
+}
+function stampFor(off){if(off<=10)return"CLOSED";if(off<=25)return"BEST AND FINAL";if(off<=50)return"IN DD";if(off<=100)return"RETRADED";return"DEAD DEAL";}
+function rankFor(total){
+  if(total<100)return{title:"Gen Vac whisperer",blurb:"You can smell a cap rate through the OM."};
+  if(total<200)return{title:"IC approved",blurb:"Clean memo. No follow-ups. Rare."};
+  if(total<325)return{title:"Senior Associate",blurb:"Solid. Still getting the 11pm model requests."};
+  if(total<600)return{title:"Broker OM believer",blurb:"Pro forma rents were never in place. Lol."};
+  if(total<800)return{title:"Bid-ask tourist",blurb:"Tour the building next time."};
+  return{title:"You bought the 2022 top",blurb:"Had been a while! Hope the debt was fixed."};
+}
+function tone(off){return off<=25?"var(--ok)":off<=75?"var(--warn)":"var(--bad)";}
+
+var S={seed:(Date.now()^0x5bd1e995)>>>0,deals:null,phase:"intro",round:0,guess:600,results:[],done:false,showModel:false,copied:"",startAt:0,endAt:0,raf:0};
+S.deals=makeDeals(S.seed);
+var app=document.getElementById("app"),hud=document.getElementById("hud"),srcEl=document.getElementById("sources");
+function total(){return S.results.reduce(function(s,x){return s+x.off;},0);}
+function last(){return S.results[S.results.length-1];}
+
+function modelHTML(){
+  var h='<div class="model" id="model"><div style="margin-bottom:8px;font-family:var(--sans);font-size:13.5px;line-height:1.5">Basis: survey going-in cap rates for stabilized warehouse, not market-wide transaction averages (those run higher and mix classes).</div>';
+  h+='<div class="label" style="margin-bottom:4px">Class A survey base (avg of NM point and CBRE range mid)</div>';
+  MARKETS.forEach(function(m){h+='<div class="lr"><span>'+esc(m.name)+'</span><span>'+pct(m.base)+'</span></div>';});
+  h+='<div class="label" style="margin:10px 0 4px">Adjustments (bps)</div>';
+  h+="<div>Post-hike: +15 on every deal (surveys predate the Sep 2026 hike; C&amp;W Fall/Winter 2026 has national rates about 15 bp above spring: A 5.43%, B 6.17%, C 7.53%. 10-yr UST 5.05% on Oct 28)</div>";
+  h+="<div>Class (C&amp;W Spring 2026, Newmark spreads): A 0, B +70, C +210. A = built 2012+ with modern clear for its type (bulk, cold, manufacturing 32'+; mid-bay 28'+; shallow-bay, infill 24'+; flex 20'+). C = pre-1995 or low clear (under 24'; under 20' for shallow-bay and infill; under 18' for flex). Everything else B.</div>";
+  h+="<div>Product: bulk, mid-bay, shallow-bay 0 (size line covers it); infill last-mile -15*, flex / R&amp;D +25*, cold storage +40*, manufacturing +50*</div>";
+  h+="<div>Size*: 750k+ SF -10, 250k to 750k 0, 100k to 250k +10, 50k to 100k +20, under 50k +30</div>";
+  h+="<div>Lease*: short WALT (under 4) below/at/above mkt -15/+10/+25; mid (4 to 8) -5/0/+15; long (8+) +5/-15/+20; vacant +30</div>";
+  h+="<div>Credit*: IG retailer -15, IG 3PL -10, national unrated 0, regional +10, local +15</div>";
+  h+="<div>Noise: random, plus or minus 15</div><div>Rounded to 5 bps, clamped 4.75% to 8.50%.</div>";
+  h+='<div style="margin-top:6px">* Game assumption. Size informed by M&amp;M May 2026 (small-bay vs big-box about 90 bp raw, not quality adjusted). Lease and credit informed by C&amp;W commentary; no published bp spread.</div></div>';
+  return h;
+}
+function sourcesHTML(){
+  var h='<div class="card src" id="srcs"><div class="label" style="margin-bottom:6px">Sources</div><div style="font-size:13px;color:var(--text2);line-height:1.5;margin-bottom:8px">Calibrated to survey going-in cap rates for stabilized warehouse, not market-wide transaction averages (those run higher and mix classes). Figures as of Oct 31, 2026.</div>';
+  SOURCES.forEach(function(s){h+='<div class="it"><a href="'+esc(s.href)+'" target="_blank" rel="noopener noreferrer">'+esc(s.name)+'</a></div>';});
+  return h+'</div>';
+}
+function spec(k,v){return '<div class="spec"><div class="label">'+esc(k)+'</div><div class="v">'+esc(v)+'</div></div>';}
+function pipsHTML(){
+  var h='<div class="pips">';
+  for(var i=0;i<ROUNDS;i++){var r=S.results[i];var bg=r?tone(r.off):i===S.round?"var(--accent)":"var(--border)";h+='<div class="pip" style="background:'+bg+';opacity:'+(r||i===S.round?1:.6)+'"></div>';}
+  return h+'</div>';
+}
+function dealHTML(d,anim){
+  return '<div class="card'+(anim?' a-in':'')+'" id="deal" data-testid="deal-card"><div class="mkt"><div class="n">'+esc(d.market)+'</div><div class="label">'+esc(d.tier)+'</div></div>'+
+  '<div class="prod"><div class="badge" data-testid="class-badge">CLASS '+d.cls+'</div><div class="p" data-testid="product">'+esc(d.product)+'</div></div>'+
+  '<div class="specs">'+spec("Building",d.sf.toLocaleString("en-US")+" SF")+spec("Clear height",d.clear+"'")+spec("Year built",String(d.year))+spec("WALT",d.walt===0?"0.0 yrs":d.walt.toFixed(1)+" yrs")+spec("Tenant",d.credit)+spec("Rents vs market",d.mtm)+'</div>'+
+  '<div class="note">'+esc(d.note)+'</div></div>';
+}
+function meterHTML(g,a){
+  function pos(b){return((b-MIN)/(MAX-MIN))*100;}
+  var h='<div class="meter"><div style="left:0;right:0;top:13px;height:2px;background:var(--border)"></div>';
+  [400,500,600,700,800,900].forEach(function(b){h+='<div style="left:'+pos(b)+'%;top:8px;width:1px;height:12px;background:var(--strong)"></div>';});
+  if(a!==null){var lo=Math.min(g,a),hi=Math.max(g,a);h+='<div style="left:'+pos(lo)+'%;width:'+(pos(hi)-pos(lo))+'%;top:10px;height:8px;background:'+tone(hi-lo)+';opacity:.35;border-radius:4px"></div>';}
+  h+='<div style="left:'+pos(g)+'%;top:4px;width:4px;margin-left:-2px;height:20px;border-radius:2px;background:var(--text2)"></div>';
+  if(a!==null)h+='<div class="a-pop" style="left:'+pos(a)+'%;top:2px;width:6px;margin-left:-3px;height:24px;border-radius:3px;background:var(--accent)"></div>';
+  return h+'</div>';
+}
+
+function render(animDeal){
+  var t=total();
+  hud.innerHTML=(S.phase==="play"||S.phase==="reveal")?'<div>DEAL '+Math.min(S.round+1,ROUNDS)+'/'+ROUNDS+'</div><div data-testid="running">'+t+' BPS OFF</div>':"";
+  srcEl.innerHTML=(S.phase==="intro"||S.phase==="end")?sourcesHTML():"";
+  var h="";
+  if(S.phase==="intro"){
+    h='<div class="card a-in"><div class="label" style="margin-bottom:8px">Deal tape #'+(S.seed%65536).toString(16).toUpperCase().padStart(4,"0")+'</div>'+
+    '<div style="font-size:17px;line-height:1.5">8 fictional industrial deals. Read the card, slide to your going-in cap rate, lock it. Score is total bps off. Lower is better.</div>'+
+    '<div style="font-size:14px;color:var(--text2);margin-top:8px;line-height:1.5">About a minute. No comps were harmed. Answers come from a simple model calibrated to published 2026 survey cap rates. Peek below if you want spoilers.</div>'+
+    '<div class="row" style="margin-top:16px"><button class="btn primary" data-act="start">Start underwriting</button><button class="btn peek" data-act="peek">'+(S.showModel?"Hide the model":"Peek at the model")+'</button></div>'+
+    (S.showModel?modelHTML():'<div style="font-size:12.5px;color:var(--text3);margin-top:8px">Peek at the model (spoils it a bit). Full math shows on every reveal anyway.</div>')+'</div>';
+  } else if(S.phase==="play"||S.phase==="reveal"){
+    var d=S.deals[Math.min(S.round,ROUNDS-1)];
+    h=pipsHTML()+dealHTML(d,animDeal);
+    if(S.phase==="play"){
+      h+='<div class="card a-in" id="guessCard"><div class="label">Your going-in cap</div><div class="big" id="guessVal" style="margin-top:6px">'+pct(S.guess)+'</div>'+
+      '<input type="range" id="slider" min="'+MIN+'" max="'+MAX+'" step="5" value="'+S.guess+'" aria-label="Cap rate guess">'+
+      '<div class="lr" style="font-family:var(--mono);font-size:11px;color:var(--text3)"><span>4.00%</span><span>9.00%</span></div>'+
+      '<div class="nud"><button data-nudge="-25">-25</button><button data-nudge="-5">-5</button><button data-nudge="5">+5</button><button data-nudge="25">+25</button></div>'+
+      '<div class="row" style="margin-top:12px"><button class="btn primary" data-act="lock">Lock it in</button></div></div>';
+    } else {
+      var L=last();
+      h+='<div class="card'+(S.done?'':' a-in')+'" id="reveal" data-testid="reveal" style="position:relative;overflow:hidden"><div class="row" style="gap:16px;justify-content:space-between;align-items:flex-end">'+
+      '<div style="min-width:0"><div class="label">Model cap</div><div class="big" id="shown" style="margin-top:6px;color:'+(S.done?"var(--accent)":"var(--text)")+'">'+pct(S.done?L.answer:L.guess)+'</div></div>'+
+      '<div style="text-align:right;min-width:0"><div class="label">You said '+pct(L.guess)+'</div>'+(S.done?'<div class="a-pop" data-testid="off" style="font-family:var(--mono);font-weight:700;font-size:30px;color:'+tone(L.off)+';margin-top:6px">'+L.off+' bps</div>':'')+'</div></div>'+
+      meterHTML(L.guess,S.done?L.answer:null);
+      if(S.done){
+        h+='<div class="a-in"><div class="row" style="align-items:center;gap:12px;margin-top:10px"><div class="stamp a-stamp" style="border-color:'+tone(L.off)+';color:'+tone(L.off)+'">'+L.stamp+'</div><div class="quip">'+esc(L.quip)+'</div></div>'+
+        '<div class="brk" data-testid="breakdown"><div class="lr"><span>'+esc(d.market)+' Class A survey base</span><span data-v="'+d.base+'">'+pct(d.base)+'</span></div><div class="small" style="margin-bottom:2px">('+esc(d.src)+')</div>';
+        d.adjs.forEach(function(a){h+='<div class="lr adj"><span>'+esc(a.label)+'</span><span data-v="'+a.v+'">'+sgn(a.v)+'</span></div>';});
+        h+='<div class="lr tot"><span>Model cap</span><span data-total="'+d.answer+'">'+pct(d.answer)+'</span></div><div class="small" style="margin-top:4px">* Game assumption. Full model on the start screen, sources at the end.</div></div>'+
+        '<div class="row" style="margin-top:14px"><button class="btn primary" data-act="next">'+(S.round+1>=ROUNDS?"See the damage":"Next deal")+'</button></div></div>';
+      }
+      h+='</div>';
+    }
+  } else if(S.phase==="end"){
+    var rk=rankFor(t);var best=Math.min.apply(null,S.results.map(function(x){return x.off;}));
+    h='<div class="card a-in" data-testid="end"><div class="label">Total miss, '+ROUNDS+' deals</div>'+
+    '<div class="big a-pop" style="font-size:clamp(56px,20vw,104px);margin-top:6px;color:var(--accent)"><span data-testid="total">'+t+'</span><span style="font-size:.35em;margin-left:8px;color:var(--text2)">bps</span></div>'+
+    '<div style="font-size:24px;font-weight:800;margin-top:10px" data-testid="rank">'+esc(rk.title)+'</div><div style="font-size:15px;color:var(--text2);margin-top:4px">'+esc(rk.blurb)+'</div>'+
+    '<div style="font-family:var(--mono);font-size:12.5px;color:var(--text3);margin-top:8px">Avg '+Math.round(t/ROUNDS)+' bps per deal. Best miss '+best+' bps. '+Math.max(1,Math.round((S.endAt-S.startAt)/1000))+'s on the clock.</div><div class="recap">';
+    S.results.forEach(function(x,i){h+='<div class="lr"><span>'+(i+1)+'. '+esc(x.market)+'</span><span style="color:var(--text2)">'+pct(x.guess)+' vs '+pct(x.answer)+' <b style="color:'+tone(x.off)+'">'+x.off+'</b></span></div>';});
+    h+='</div><div class="share" id="shareText" data-testid="share">'+esc(shareText())+'</div>'+
+    '<div class="row" style="margin-top:12px"><button class="btn primary" data-act="copy">Copy result</button><button class="btn" data-act="again">Play again</button></div>'+
+    (S.copied?'<div style="font-size:13px;color:var(--text2);margin-top:8px" data-testid="copied">'+esc(S.copied)+'</div>':'')+'</div>';
+  }
+  app.innerHTML=h;
+  var sl=document.getElementById("slider");
+  if(sl)sl.addEventListener("input",function(e){S.guess=Number(e.target.value);document.getElementById("guessVal").textContent=pct(S.guess);});
+}
+function shareText(){return"Cap Rate or Cap?: I was "+total()+" bps off across "+ROUNDS+" deals. "+rankFor(total()).title+". Beat me:";}
+
+function start(){S.round=0;S.results=[];S.guess=600;S.copied="";S.startAt=Date.now();S.phase="play";render(true);window.scrollTo(0,0);}
+function lock(){
+  var d=S.deals[S.round];var r=rng(S.seed+S.round*7919);var off=Math.abs(S.guess-d.answer);
+  S.results.push({guess:S.guess,answer:d.answer,off:off,quip:quipFor(off,S.guess-d.answer,d.answer,r),stamp:stampFor(off),market:d.market});
+  S.phase="reveal";S.done=false;render(false);
+  var from=S.guess,to=d.answer,t0=performance.now(),dur=900;
+  cancelAnimationFrame(S.raf);
+  function step(now){var k=Math.min(1,(now-t0)/dur);var e=1-Math.pow(1-k,3);var el=document.getElementById("shown");if(el)el.textContent=pct(Math.round(from+(to-from)*e));if(k<1)S.raf=requestAnimationFrame(step);else{S.done=true;render(false);}}
+  S.raf=requestAnimationFrame(step);
+}
+function next(){
+  if(S.round+1>=ROUNDS){S.endAt=Date.now();S.phase="end";render(false);window.scrollTo(0,0);}
+  else{S.round++;S.guess=600;S.phase="play";render(true);var dc=document.getElementById("deal");if(dc&&dc.getBoundingClientRect().top<0)dc.scrollIntoView({block:"start"});}
+}
+function again(){S.seed=((Math.imul(S.seed,1664525)+1013904223)^Date.now())>>>0;S.deals=makeDeals(S.seed);start();}
+function copy(){
+  var text=shareText();
+  function done(msg){S.copied=msg;render(false);}
+  function fallback(){
+    try{var ta=document.createElement("textarea");ta.value=text;ta.setAttribute("readonly","");ta.style.position="fixed";ta.style.top="0";ta.style.left="0";ta.style.opacity="0";ta.style.fontSize="16px";document.body.appendChild(ta);
+      var range=document.createRange();range.selectNodeContents(ta);var sel=window.getSelection();sel.removeAllRanges();sel.addRange(range);ta.setSelectionRange(0,text.length);
+      var ok=document.execCommand("copy");document.body.removeChild(ta);done(ok?"Copied. Go post it.":"Copy blocked here. Select the text above.");}
+    catch(e){done("Copy blocked here. Select the text above.");}
+  }
+  if(navigator.clipboard&&window.isSecureContext&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(function(){done("Copied. Go post it.");},fallback);}else fallback();
+}
+document.addEventListener("click",function(e){
+  var b=e.target.closest("button");if(!b)return;
+  var act=b.getAttribute("data-act"),n=b.getAttribute("data-nudge");
+  if(n!==null){S.guess=Math.min(MAX,Math.max(MIN,S.guess+Number(n)));var sl=document.getElementById("slider");if(sl)sl.value=S.guess;document.getElementById("guessVal").textContent=pct(S.guess);return;}
+  if(act==="start")start();else if(act==="peek"){S.showModel=!S.showModel;render(false);}
+  else if(act==="lock"&&S.phase==="play")lock();else if(act==="next"&&S.phase==="reveal"&&S.done)next();
+  else if(act==="copy")copy();else if(act==="again")again();
+});
+document.addEventListener("keydown",function(e){if(e.key==="Enter"&&!(e.target&&e.target.closest&&e.target.closest("button"))){if(S.phase==="play")lock();else if(S.phase==="reveal"&&S.done)next();}});
+window.__crc=S;
+render(false);
+})();
+</script>
+</body>
+</html>
