@@ -94,6 +94,7 @@ input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;bac
 .srcd a{color:var(--accent);font-size:14px;line-height:1.5;overflow-wrap:anywhere;opacity:.85}
 .srcd .it{padding:4px 0}
 .vacnote{margin-top:10px;padding:8px 10px;border-radius:8px;border:1px dashed var(--warn);color:var(--text);font-size:14px;line-height:1.4}
+.hint{font-size:13.5px;color:var(--text3);margin-top:6px}
 .dir{font-size:13.5px;color:var(--text2);margin-top:4px}
 .grid{margin-top:14px;font-size:28px;letter-spacing:2px;line-height:1.2;overflow-wrap:anywhere}
 .legend{margin-top:6px;font-size:13.5px;color:var(--text2)}
@@ -263,7 +264,7 @@ function cap1(s){return s.charAt(0).toUpperCase()+s.slice(1);}
 function quipFor(off,dir,answer,r,lolUsed){
   // dir<0: guess below the model cap = priced too rich (overpaid). dir>0: guess above = too wide (lose the deal).
   var om=pct(Math.max(MIN,answer-75)).replace("%","");var pool;
-  if(off===0)pool=["Exact. Pin drop. Lfg!","Zero bps. Are you the seller? IYKYK."];
+  if(off===0)pool=["Exact. Gen Vac is calling."];
   else if(off<=10)pool=["Inside a rounding error. Lfg!","That's a handshake deal. Had been a while!","Tight. Somebody actually reads rent rolls."];
   else if(off<=25)pool=dir<0?["A hair rich. Still makes best and final.","Slightly rich. Seller is smiling, IC is fine."]:["A hair wide. Still makes best and final.","Slightly wide. Inside the bid-ask. Respect."];
   else if(off<=50)pool=dir<0?["A little rich. IC will have questions.","Bid-ask spread energy. Seller loved you."]:["Bid-ask spread energy. Seller wanted tighter.","Lowballed it. Classic LOI."];
@@ -272,8 +273,8 @@ function quipFor(off,dir,answer,r,lolUsed){
   if(lolUsed)pool=pool.filter(function(q){return q.indexOf("Lol")<0;});
   return pool[Math.floor(r()*pool.length)];
 }
-function stampFor(off,dir){if(off<=10)return"CLOSED";if(off<=25)return"BEST AND FINAL";if(off<=75)return dir<0?"PAID UP":"OUTBID";return dir<0?"OWN THE LOSS":"LOST THE DEAL";}
-function dirLine(off,dir){if(off===0)return"Dead on.";if(off<=10)return dir<0?"Basically on it (a touch rich).":"Basically on it (a touch wide).";return dir<0?"Too rich. You'd overpay.":"Too wide. You'd lose the bid.";}
+function stampFor(off,dir){if(off===0)return"PINNED IT";if(off<=10)return"CLOSED";if(off<=25)return"BEST AND FINAL";if(off<=75)return dir<0?"PAID UP":"OUTBID";return dir<0?"OWN THE LOSS":"LOST THE DEAL";}
+function dirLine(off,dir){if(off===0)return"Dead on. Nobody does that.";if(off<=10)return dir<0?"Basically on it (a touch rich).":"Basically on it (a touch wide).";if(off<=25)return dir<0?"Close. A little rich, still in the hunt.":"Close. A little wide, still in the hunt.";return dir<0?"Too rich. You'd overpay.":"Too wide. You'd lose the bid.";}
 function square(off){return off<=25?"\uD83D\uDFE9":off<=75?"\uD83D\uDFE8":"\uD83D\uDFE5";}
 function rankIdx(total){for(var i=0;i<RANKS.length;i++)if(total<RANKS[i].max)return i;return RANKS.length-1;}
 function tone(off){return off<=25?"var(--ok)":off<=75?"var(--warn)":"var(--bad)";}
@@ -349,6 +350,7 @@ function render(animDeal){
       h+='<div class="card a-in" id="guessCard"><div class="label" data-testid="guess-label">'+(d.vacant?"Your pro forma cap (stabilized)":"Your going-in cap")+'</div><div class="big" id="guessVal" style="margin-top:6px">'+pct(S.guess)+'</div>'+
       '<input type="range" id="slider" min="'+MIN+'" max="'+MAX+'" step="5" value="'+S.guess+'" aria-label="Cap rate guess">'+
       '<div class="ends"><span>4.00%</span><span>9.00%</span></div>'+
+      '<div class="hint" data-testid="hint">'+(S.round===0?"Slider starts at a random spot on deal 1.":"Slider starts at your last guess.")+'</div>'+
       '<div class="nud"><button data-nudge="-25">-25</button><button data-nudge="-5">-5</button><button data-nudge="5">+5</button><button data-nudge="25">+25</button></div>'+
       '<div class="row" style="margin-top:12px"><button class="btn primary" data-act="lock">Lock it in</button></div></div>';
     } else {
@@ -438,7 +440,7 @@ document.addEventListener("click",function(e){
   else if(act==="copy")copy();else if(act==="again")again();
 });
 document.addEventListener("keydown",function(e){if(e.key==="Enter"&&!(e.target&&e.target.closest&&e.target.closest("button"))){if(S.phase==="play")lock();else if(S.phase==="reveal"&&S.done)next();}});
-window.__crc=S;window.__crcFns={makeDeals:makeDeals,rankIdx:rankIdx};
+if(/[?&]test=1(&|$)/.test(location.search)){window.__crc=S;window.__crcFns={makeDeals:makeDeals,rankIdx:rankIdx};}
 render(false);
 })();
 </script>
